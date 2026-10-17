@@ -22,6 +22,10 @@ La aplicación funciona sin credenciales para explorar el catálogo y comprar co
 
 Nunca se debe exponer `service_role` ni otra clave secreta dentro de variables `VITE_*`.
 
+## Base de datos
+
+El esquema versionado está en `supabase/migrations`. Su diseño, políticas de acceso y procedimiento de aplicación se documentan en `docs/database.md`. Las migraciones deben revisarse y probarse antes de aplicarlas a un proyecto remoto.
+
 ## Compilación
 
 ```bash
