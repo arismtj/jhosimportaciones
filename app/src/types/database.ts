@@ -155,6 +155,7 @@ export type Database = {
           customizable: boolean
           featured: boolean
           published: boolean
+          price_verified: boolean
           source_system: string | null
           source_version: number | null
           source_updated_at: string | null
@@ -178,6 +179,7 @@ export type Database = {
           customizable?: boolean
           featured?: boolean
           published?: boolean
+          price_verified?: boolean
           source_system?: string | null
           source_version?: number | null
           source_updated_at?: string | null

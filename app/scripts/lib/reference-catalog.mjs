@@ -45,6 +45,16 @@ export function slugify(value) {
   return slug || 'item'
 }
 
+export function sanitizePresentationText(value) {
+  return String(value)
+    .replace(/\bprecios\s+referenciales\b/giu, 'precios por confirmar')
+    .replace(/\bprecio\s+referencial\b/giu, 'precio por confirmar')
+    .replace(/\bimágenes\s+referenciales\b/giu, 'imágenes de muestra')
+    .replace(/\bimagen\s+referencial\b/giu, 'imagen de muestra')
+    .replace(/\breferenciales\b/giu, 'de muestra')
+    .replace(/\breferencial\b/giu, 'de muestra')
+}
+
 function requireText(value, field, externalId, errors) {
   if (typeof value !== 'string' || !value.trim()) {
     errors.push(`${externalId || '(sin id)'}: ${field} debe ser texto no vacío.`)
@@ -79,8 +89,10 @@ export function validateAndNormalize(products) {
     }
 
     const externalId = requireText(String(raw.id ?? ''), 'id', '', errors)
-    const name = requireText(raw.name, 'name', externalId, errors)
-    const description = requireText(raw.text, 'text', externalId, errors)
+    const sourceName = requireText(raw.name, 'name', externalId, errors)
+    const sourceDescription = requireText(raw.text, 'text', externalId, errors)
+    const name = sanitizePresentationText(sourceName)
+    const description = sanitizePresentationText(sourceDescription)
     const family = requireText(raw.group, 'group', externalId, errors)
     const subcategory = requireText(raw.subcategory, 'subcategory', externalId, errors)
     const paths = sourceImagePaths(raw)
@@ -130,6 +142,7 @@ export function validateAndNormalize(products) {
       customizable: false,
       featured: false,
       published: raw.active,
+      priceVerified: false,
       sourceSystem: SOURCE_SYSTEM,
       sourceVersion: Number.isInteger(raw.version) ? raw.version : null,
       sourceUpdatedAt: sourceUpdatedAt && !Number.isNaN(sourceUpdatedAt.getTime()) ? sourceUpdatedAt.toISOString() : null,
@@ -140,7 +153,9 @@ export function validateAndNormalize(products) {
         originalImg: raw.originalImg ?? null,
         photoSource: raw.photoSource ?? null,
         sourceAvailability: raw.availability,
-        pendingFields: ['stock_quantity', 'variants', 'customizable'],
+        pendingFields: ['price_verification', 'stock_quantity', 'variants', 'customizable'],
+        ...(name !== sourceName ? { originalName: sourceName } : {}),
+        ...(description !== sourceDescription ? { originalDescription: sourceDescription } : {}),
       },
       images: paths.map((sourcePath, index) => ({
         sourcePath,
@@ -179,6 +194,9 @@ export function validateAndNormalize(products) {
       images: images.length,
       uniqueImages: new Set(images.map((image) => image.sourceUrl)).size,
       svgImages: images.filter((image) => new URL(image.sourceUrl).pathname.toLowerCase().endsWith('.svg')).length,
+      visibleReferentialLabels: normalized.filter((product) =>
+        /\breferenciales?\b/iu.test(`${product.name} ${product.description}`),
+      ).length,
     },
   }
 }

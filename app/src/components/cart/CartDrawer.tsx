@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { products } from '../../data/products'
 import { useCart } from '../../features/cart/CartContext'
 import { formatPrice } from '../../utils/currency'
+import { PriceDisplay } from '../common/PriceDisplay'
 
 interface CartDrawerProps {
   open: boolean
@@ -9,7 +10,7 @@ interface CartDrawerProps {
 }
 
 export function CartDrawer({ open, onClose }: CartDrawerProps) {
-  const { items, count, subtotal, increase, decrease, remove } = useCart()
+  const { items, count, subtotal, hasPriceRange, increase, decrease, remove } = useCart()
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const [notice, setNotice] = useState('')
 
@@ -33,7 +34,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
       lines.push(`${index + 1}. ${product.name} — ${item.quantity} x ${formatPrice(product.price)} = ${formatPrice(product.price * item.quantity)}`)
       if (item.notes) lines.push(`   Personalización: ${item.notes}`)
     })
-    lines.push('', `Subtotal referencial: ${formatPrice(subtotal)}`, 'Por favor, confirmen precio final, disponibilidad, entrega y forma de pago.')
+    lines.push('', `${hasPriceRange ? 'Subtotal desde' : 'Subtotal estimado'}: ${formatPrice(subtotal)}`, 'Por favor, confirmen precio final, disponibilidad, entrega y forma de pago.')
     const message = lines.join('\n')
     const phone = (import.meta.env.VITE_WHATSAPP_NUMBER ?? '').replace(/\D/g, '')
     if (/^\d{10,15}$/.test(phone)) {
@@ -60,10 +61,10 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
           {!items.length ? <div className="cart-empty"><div>🛍️</div><strong>Tu carrito está esperando</strong><p>Agrega tus detalles favoritos para comenzar tu pedido.</p></div> : items.map((item, index) => {
             const product = products.find((candidate) => candidate.id === item.id)
             if (!product) return null
-            return <div className="cart-item" key={`${item.id}-${item.notes}`}><div className={`cart-item-thumb tint-${product.tint}`}><span aria-hidden="true">{product.emoji}</span></div><div className="cart-item-main"><strong>{product.name}</strong>{item.notes && <small>Nota: {item.notes}</small>}<div className="quantity"><button type="button" onClick={() => decrease(index)} aria-label="Quitar una unidad">−</button><span>{item.quantity}</span><button type="button" onClick={() => increase(index)} aria-label="Añadir una unidad">+</button><button type="button" className="item-remove" onClick={() => remove(index)}>Eliminar</button></div></div><div className="cart-item-price">{formatPrice(product.price * item.quantity)}</div></div>
+            return <div className="cart-item" key={`${item.id}-${item.notes}`}><div className={`cart-item-thumb tint-${product.tint}`}><span aria-hidden="true">{product.emoji}</span></div><div className="cart-item-main"><strong>{product.name}</strong>{item.notes && <small>Nota: {item.notes}</small>}<div className="quantity"><button type="button" onClick={() => decrease(index)} aria-label="Quitar una unidad">−</button><span>{item.quantity}</span><button type="button" onClick={() => increase(index)} aria-label="Añadir una unidad">+</button><button type="button" className="item-remove" onClick={() => remove(index)}>Eliminar</button></div></div><PriceDisplay className="cart-item-price" value={product.price * item.quantity} mode={product.priceMode} /></div>
           })}
         </div>
-        <div className="drawer-footer"><div className="cart-subtotal"><span>Subtotal referencial</span><strong>{formatPrice(subtotal)}</strong></div><p className="cart-notice">Los precios del demo no son definitivos. Confirma el precio y la disponibilidad antes de pagar.</p><button type="button" className="btn btn-primary cart-checkout" disabled={!items.length} onClick={() => void prepareOrder()}>Preparar pedido <span aria-hidden="true">→</span></button><small>La compra como invitado está habilitada; no necesitas iniciar sesión.</small>{notice && <p className="checkout-feedback" role="status">{notice}</p>}</div>
+        <div className="drawer-footer"><div className="cart-subtotal"><span>Subtotal estimado</span><PriceDisplay className="cart-subtotal-price" value={subtotal} mode={hasPriceRange ? 'from' : 'fixed'} /></div><p className="cart-notice">Los precios están sujetos a confirmación. Confirma el monto final y la disponibilidad antes de pagar.</p><button type="button" className="btn btn-primary cart-checkout" disabled={!items.length} onClick={() => void prepareOrder()}>Preparar pedido <span aria-hidden="true">→</span></button><small>La compra como invitado está habilitada; no necesitas iniciar sesión.</small>{notice && <p className="checkout-feedback" role="status">{notice}</p>}</div>
       </aside>
     </>
   )

@@ -138,8 +138,9 @@ img { max-width: 100%; display: block; }
 .product-info { padding: 17px 17px 18px; }
 .product-category { font-size: 10px; color: var(--rose); font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
 .product-info h3 { font-family: var(--serif); font-size: 18px; font-weight: 600; margin: 8px 0 7px; min-height: 43px; line-height: 1.25; }
-.product-price { font-size: 19px; color: var(--rose); font-weight: 800; margin: 0 0 15px; }
+.product-price { display: block; font-size: 19px; color: var(--rose); font-weight: 800; margin: 0 0 15px; }
 .product-price small { font-size: 10px; font-weight: 500; color: #9b7884; }
+.price-prefix { display: inline-block; margin-right: 3px; font-size: .55em; font-weight: 700; color: currentColor; }
 .product-card-actions { display: grid; grid-template-columns: 1fr 42px; gap: 8px; }
 .product-detail-btn, .quick-add { border: 1px solid #e6cdd5; background: #fff; color: var(--rose); border-radius: 8px; min-height: 41px; font-size: 11px; font-weight: 800; }
 .product-detail-btn:hover, .quick-add:hover { background: #fdf1f4; }
@@ -201,6 +202,7 @@ img { max-width: 100%; display: block; }
 .drawer-footer { padding: 22px 28px 26px; box-shadow: 0 -9px 20px #3a202005; }
 .cart-subtotal { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
 .cart-subtotal strong { font-size: 23px; color: var(--rose); }
+.cart-subtotal-price { font-size: 23px; font-weight: 800; color: var(--rose); }
 .cart-notice { font-size: 10px; line-height: 1.6; color: #877680; }
 .cart-checkout { width: 100%; margin-top: 10px; }
 .drawer-footer small { display: block; color: #88757e; font-size: 10px; line-height: 1.5; margin-top: 10px; }
@@ -217,7 +219,8 @@ img { max-width: 100%; display: block; }
 .dialog-content { padding: 58px 35px 35px; }
 .dialog-content h2 { font-family: var(--serif); font-size: 30px; line-height: 1.25; margin: 12px 0; }
 .dialog-content > p { color: var(--muted); font-size: 13px; line-height: 1.75; }
-.dialog-price { font-weight: 800; color: var(--rose); font-size: 24px; margin: 18px 0; }
+.dialog-price { display: block; font-weight: 800; color: var(--rose); font-size: 24px; margin: 18px 0; }
+.price-confirmation { margin: -12px 0 18px; color: var(--muted); font-size: 12px; }
 .notes-label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 8px; }
 .notes-label small { font-weight: 400; color: var(--muted); }
 .dialog-content textarea { width: 100%; border: 1px solid #ead9df; border-radius: 8px; resize: vertical; padding: 12px; font-size: 12px; background: #fffdfd; }

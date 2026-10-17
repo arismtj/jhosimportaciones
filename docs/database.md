@@ -18,6 +18,7 @@ Las migraciones locales definen el modelo comercial, pero no se han aplicado al 
 - El catálogo publicado es público; cualquier escritura de catálogo requiere el rol `admin` validado dentro de PostgreSQL.
 - Los favoritos y el historial de pedidos están limitados al propietario.
 - La creación de pedidos admite invitados, valida los datos y recalcula precios desde `products` y `product_variants` dentro de una transacción. El cliente nunca fija el precio final.
+- `price_verified` comienza en `false` para cualquier producto importado. Un trigger impide registrar líneas de pedido hasta que el precio haya sido confirmado administrativamente.
 - Un pedido con entrega mantiene `total = null` hasta que exista una tarifa de envío validada. No se inventa un costo de entrega.
 - Las funciones `security definer` viven en el esquema no expuesto `private`, fijan `search_path = ''`, usan nombres de esquema explícitos y tienen permisos de ejecución restringidos. La API pública de pedidos es un wrapper `security invoker`.
 

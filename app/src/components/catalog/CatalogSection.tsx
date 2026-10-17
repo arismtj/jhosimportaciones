@@ -57,7 +57,7 @@ export function CatalogSection({ filter, onFilterChange, onProductAdded }: Catal
       <div className="wrap">
         <div className="section-heading catalog-heading">
           <div><div className="section-kicker">ESCOGIDOS PARA TI</div><h2 id="catalogTitle">Nuestro <em>catálogo</em></h2><p>Descubre una selección para regalar, celebrar y disfrutar.</p></div>
-          <span className="demo-pill">Catálogo de demostración · precios referenciales</span>
+          <span className="demo-pill">Catálogo en preparación · precios sujetos a confirmación</span>
         </div>
         <div className="catalog-toolbar">
           <div className="filter-scroll" role="group" aria-label="Filtrar por categoría">

@@ -42,6 +42,7 @@ create table public.catalog_import_issues (
 );
 
 alter table public.products
+  add column price_verified boolean not null default false,
   add column source_system text,
   add column source_version integer,
   add column source_updated_at timestamptz,
@@ -80,6 +81,31 @@ using ((select private.is_admin()));
 create policy "catalog_import_issues_admin_read"
 on public.catalog_import_issues for select to authenticated
 using ((select private.is_admin()));
+
+create or replace function private.enforce_verified_order_price()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if new.product_id is not null and not exists (
+    select 1
+    from public.products
+    where id = new.product_id
+      and price_verified = true
+  ) then
+    raise exception 'The product price must be verified before creating an order.' using errcode = '23514';
+  end if;
+  return new;
+end;
+$$;
+
+revoke execute on function private.enforce_verified_order_price() from public, anon, authenticated;
+
+create trigger order_items_require_verified_price
+before insert on public.order_items
+for each row execute function private.enforce_verified_order_price();
 
 create or replace function public.replace_product_images(
   p_product_id uuid,
@@ -145,3 +171,4 @@ grant execute on function public.replace_product_images(uuid, jsonb) to service_
 comment on table public.catalog_import_runs is 'Auditoría de cada importación del catálogo de referencia.';
 comment on table public.catalog_import_issues is 'Errores y advertencias detectados sin ocultarlos durante una importación.';
 comment on column public.products.source_metadata is 'Metadatos originales que no forman parte del modelo comercial normalizado.';
+comment on column public.products.price_verified is 'Impide usar un precio importado en pedidos reales hasta su confirmación administrativa.';

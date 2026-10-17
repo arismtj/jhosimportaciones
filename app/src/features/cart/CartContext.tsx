@@ -8,6 +8,7 @@ interface CartContextValue {
   items: CartItem[]
   count: number
   subtotal: number
+  hasPriceRange: boolean
   addItem: (id: string, notes?: string) => void
   increase: (index: number) => void
   decrease: (index: number) => void
@@ -52,11 +53,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const product = products.find((candidate) => candidate.id === item.id)
       return total + (product?.price ?? 0) * item.quantity
     }, 0)
+    const hasPriceRange = items.some((item) =>
+      products.find((product) => product.id === item.id)?.priceMode === 'from',
+    )
 
     return {
       items,
       count,
       subtotal,
+      hasPriceRange,
       addItem: (id, notes = '') => {
         const normalizedNotes = notes.trim().slice(0, 250)
         if (!products.some((product) => product.id === id)) return

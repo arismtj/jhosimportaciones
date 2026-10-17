@@ -1,6 +1,6 @@
 {
   "sourceUrl": "https://jhos-importaciones-tienda.wigglyemu17.chatgpt.site/api/products",
-  "fetchedAt": "2026-10-17T02:42:06.222Z",
+  "fetchedAt": "2026-10-17T02:52:49.518Z",
   "sourceSha256": "b9777f1788034668b49457d5107664d76c35af7b037487cd85035f88d7a48921",
   "stats": {
     "products": 271,
@@ -18,7 +18,8 @@
     "priceRanges": 5,
     "images": 295,
     "uniqueImages": 295,
-    "svgImages": 13
+    "svgImages": 13,
+    "visibleReferentialLabels": 0
   },
   "warnings": [
     "Nombre repetido “zapatillas” en los IDs: 190, 1ed17d34-a4d4-4747-a04d-f058ade278de, c0ffbd79-c431-418b-a1dd-6507d2098140.",

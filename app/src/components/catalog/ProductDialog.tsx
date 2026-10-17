@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { categoryLabels } from '../../data/products'
 import type { Product } from '../../types/product'
-import { formatPrice } from '../../utils/currency'
+import { PriceDisplay } from '../common/PriceDisplay'
 
 interface ProductDialogProps {
   product: Product | null
@@ -42,7 +42,8 @@ export function ProductDialog({ product, onClose, onAdd }: ProductDialogProps) {
           <div className="section-kicker">{categoryLabels[product.category]}</div>
           <h2 id="dialogTitle">{product.name}</h2>
           <p>{product.description}</p>
-          <div className="dialog-price">{formatPrice(product.price)} · precio de ejemplo</div>
+          <PriceDisplay className="dialog-price" value={product.price} mode={product.priceMode} />
+          <p className="price-confirmation">Precio sujeto a confirmación antes de realizar el pedido.</p>
           <label className="notes-label" htmlFor="productNotes">Personalización o indicaciones <small>(opcional)</small></label>
           <textarea id="productNotes" rows={3} maxLength={250} value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Ej.: nombre, frase, color o dedicatoria..." />
           <button type="button" className="btn btn-primary dialog-add" onClick={() => onAdd(product, notes)}>Añadir al carrito <span aria-hidden="true">→</span></button>

@@ -54,10 +54,12 @@ npm run catalog:import
 
 El proceso realiza `upsert` por `external_id`, usa slugs deterministas, sube imágenes con rutas basadas en su hash y registra cada ejecución y error. Si todas las imágenes de un producto fallan, utiliza el logo oficial almacenado en el bucket como alternativa y conserva el error en `catalog_import_issues`.
 
+Todos los productos importados entran con `price_verified = false`. El texto comercial elimina la etiqueta «referencial» únicamente en la presentación, conserva los importes originales y guarda cualquier texto de origen sustituido dentro de `source_metadata`. La base de datos rechaza pedidos reales de esos productos hasta que un administrador confirme expresamente el precio.
+
 La opción manual `--reconcile-missing` despublica productos previamente importados que ya no aparezcan en el snapshot. No forma parte del comando normal porque retirar productos requiere una decisión explícita.
 
 ## Datos deliberadamente pendientes
 
-La fuente no proporciona cantidades exactas de inventario, variantes estructuradas ni una marca confiable de personalización. El importador deja `stock_quantity` en `null`, no crea variantes y registra esos campos como pendientes dentro de `source_metadata`.
+La fuente no proporciona cantidades exactas de inventario, variantes estructuradas ni una marca confiable de personalización. El importador deja `stock_quantity` en `null`, no crea variantes y registra esos campos, junto con la validación del precio, como pendientes dentro de `source_metadata`.
 
 Los nombres duplicados no se fusionan: cada registro conserva su `external_id` original.

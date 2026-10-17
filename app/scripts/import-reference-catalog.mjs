@@ -233,6 +233,7 @@ async function importCatalog(products, audit, imageChecks) {
           customizable: product.customizable,
           featured: product.featured,
           published: product.published,
+          price_verified: product.priceVerified,
           source_system: product.sourceSystem,
           source_version: product.sourceVersion,
           source_updated_at: product.sourceUpdatedAt,
