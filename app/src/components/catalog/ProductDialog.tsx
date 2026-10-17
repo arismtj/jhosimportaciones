@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { categoryLabels } from '../../data/products'
+import { Link } from 'react-router-dom'
 import type { Product } from '../../types/product'
 import { PriceDisplay } from '../common/PriceDisplay'
 
@@ -23,6 +23,7 @@ export function ProductDialog({ product, onClose, onAdd }: ProductDialogProps) {
   }, [product])
 
   if (!product) return <dialog ref={dialogRef} />
+  const unavailable = product.availability === 'out_of_stock'
 
   return (
     <dialog
@@ -39,14 +40,14 @@ export function ProductDialog({ product, onClose, onAdd }: ProductDialogProps) {
           {product.image ? <img src={product.image} alt={product.name} /> : <span aria-hidden="true">{product.emoji}</span>}
         </div>
         <div className="dialog-content">
-          <div className="section-kicker">{categoryLabels[product.category]}</div>
+          <div className="section-kicker">{product.familyName} · {product.categoryName}</div>
           <h2 id="dialogTitle">{product.name}</h2>
           <p>{product.description}</p>
           <PriceDisplay className="dialog-price" value={product.price} mode={product.priceMode} />
-          <p className="price-confirmation">Precio sujeto a confirmación antes de realizar el pedido.</p>
+          <p className="price-confirmation">Precio sujeto a confirmación antes de realizar el pedido. <Link to={`/producto/${product.slug}`} onClick={onClose}>Ver ficha completa →</Link></p>
           <label className="notes-label" htmlFor="productNotes">Personalización o indicaciones <small>(opcional)</small></label>
           <textarea id="productNotes" rows={3} maxLength={250} value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Ej.: nombre, frase, color o dedicatoria..." />
-          <button type="button" className="btn btn-primary dialog-add" onClick={() => onAdd(product, notes)}>Añadir al carrito <span aria-hidden="true">→</span></button>
+          <button type="button" className="btn btn-primary dialog-add" disabled={unavailable} onClick={() => onAdd(product, notes)}>{unavailable ? 'Producto agotado' : 'Añadir al carrito'} <span aria-hidden="true">→</span></button>
         </div>
       </div>
     </dialog>

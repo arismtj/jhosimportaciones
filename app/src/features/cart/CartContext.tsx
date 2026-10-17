@@ -1,18 +1,18 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { products } from '../../data/products'
-import type { CartItem } from '../../types/product'
+import type { CartItem, Product } from '../../types/product'
 
-const STORAGE_KEY = 'jhos_cart_v2'
+const STORAGE_KEY = 'jhos_cart_v3'
 
 interface CartContextValue {
   items: CartItem[]
   count: number
   subtotal: number
   hasPriceRange: boolean
-  addItem: (id: string, notes?: string) => void
+  addItem: (product: Product, notes?: string) => void
   increase: (index: number) => void
   decrease: (index: number) => void
   remove: (index: number) => void
+  clear: () => void
 }
 
 const CartContext = createContext<CartContextValue | null>(null)
@@ -26,7 +26,11 @@ function restoreCart(): CartItem[] {
         if (!item || typeof item !== 'object') return false
         const candidate = item as Partial<CartItem>
         return Boolean(
-          products.some((product) => product.id === candidate.id) &&
+          candidate.product &&
+            typeof candidate.product === 'object' &&
+            typeof candidate.product.id === 'string' &&
+            typeof candidate.product.name === 'string' &&
+            Number.isFinite(candidate.product.price) &&
             typeof candidate.notes === 'string' &&
             Number.isInteger(candidate.quantity) &&
             Number(candidate.quantity) > 0 &&
@@ -49,25 +53,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<CartContextValue>(() => {
     const count = items.reduce((total, item) => total + item.quantity, 0)
-    const subtotal = items.reduce((total, item) => {
-      const product = products.find((candidate) => candidate.id === item.id)
-      return total + (product?.price ?? 0) * item.quantity
-    }, 0)
-    const hasPriceRange = items.some((item) =>
-      products.find((product) => product.id === item.id)?.priceMode === 'from',
-    )
+    const subtotal = items.reduce((total, item) => total + item.product.price * item.quantity, 0)
+    const hasPriceRange = items.some((item) => item.product.priceMode === 'from')
 
     return {
       items,
       count,
       subtotal,
       hasPriceRange,
-      addItem: (id, notes = '') => {
+      addItem: (product, notes = '') => {
         const normalizedNotes = notes.trim().slice(0, 250)
-        if (!products.some((product) => product.id === id)) return
+        if (product.availability === 'out_of_stock') return
         setItems((current) => {
-          const index = current.findIndex((item) => item.id === id && item.notes === normalizedNotes)
-          if (index < 0) return [...current, { id, notes: normalizedNotes, quantity: 1 }]
+          const index = current.findIndex((item) => item.product.id === product.id && item.notes === normalizedNotes)
+          if (index < 0) return [...current, { product, notes: normalizedNotes, quantity: 1 }]
           return current.map((item, itemIndex) =>
             itemIndex === index ? { ...item, quantity: Math.min(99, item.quantity + 1) } : item,
           )
@@ -87,6 +86,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           }),
         ),
       remove: (index) => setItems((current) => current.filter((_item, itemIndex) => itemIndex !== index)),
+      clear: () => setItems([]),
     }
   }, [items])
 

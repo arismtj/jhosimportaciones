@@ -1,0 +1,24 @@
+{
+  "name": "JHOS Importaciones",
+  "url": "https://jhosimportaciones.com",
+  "locale": "es_PE",
+  "legalName": "JHOS IMPORTACIONES E.I.R.L.",
+  "ruc": "20614901421",
+  "email": "jhosimportaciones@gmail.com",
+  "telephone": "+51976110949",
+  "phones": ["+51976110949", "+51902582800"],
+  "address": {
+    "streetAddress": "General Murillo 181, Urb. La Campiña, Zona 4, dpto. 301",
+    "addressLocality": "Chorrillos",
+    "addressRegion": "Lima",
+    "addressCountry": "PE"
+  },
+  "logo": "/icons/icon-512.png",
+  "ogImage": "/og-image.jpg",
+  "sameAs": [
+    "https://www.instagram.com/jhosimportaciones/",
+    "https://www.instagram.com/jhos210325/",
+    "https://www.tiktok.com/@jhos.sublimacion",
+    "https://www.tiktok.com/@jhos.detalles"
+  ]
+}

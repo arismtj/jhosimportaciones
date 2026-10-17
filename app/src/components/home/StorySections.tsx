@@ -7,7 +7,7 @@ export function StorySections() {
       </section>
       <section id="nosotros" className="about-section wrap section-pad">
         <div className="about-stamp" aria-hidden="true"><span>JHOS</span><small>regalos con corazón</small><span>♡</span></div>
-        <div className="about-copy"><div className="section-kicker">CONÓCENOS</div><h2>Pequeños detalles, <em>grandes sonrisas.</em></h2><p>En <strong>JHOS Importaciones</strong> reunimos regalos, detalles personalizados, peluches y productos para el hogar. Queremos ayudarte a encontrar algo bonito para cada ocasión.</p><p className="about-note">Esta es nuestra primera versión de la tienda; próximamente incorporaremos fotos y precios reales de nuestros productos.</p></div>
+        <div className="about-copy"><div className="section-kicker">CONÓCENOS</div><h2>Pequeños detalles, <em>grandes sonrisas.</em></h2><p>En <strong>JHOS Importaciones</strong> reunimos regalos, detalles personalizados, peluches y productos para el hogar. Queremos ayudarte a encontrar algo bonito para cada ocasión.</p><p className="about-note">Consulta con nosotros la disponibilidad, personalización y entrega de tu producto favorito.</p></div>
       </section>
     </>
   )

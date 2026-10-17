@@ -1,14 +1,13 @@
-import type { CategoryId } from '../../types/product'
+import type { CatalogFilter } from '../catalog/CatalogSection'
 
-const categories: Array<{ id: CategoryId; emoji: string; title: string; subtitle: string }> = [
-  { id: 'sublimados', emoji: '☕', title: 'Detalles sublimados', subtitle: 'Un recuerdo a tu estilo' },
-  { id: 'romanticos', emoji: '💝', title: 'Detalles románticos', subtitle: 'Haz latir su corazón' },
-  { id: 'peluches', emoji: '🧸', title: 'Peluches', subtitle: 'Abrazos en forma de regalo' },
-  { id: 'hogar', emoji: '🍽️', title: 'Hogar y utensilios', subtitle: 'Detalles para cada día' },
+const categories: Array<{ id: CatalogFilter; emoji: string; title: string; subtitle: string }> = [
+  { id: 'importaciones', emoji: '🛍️', title: 'Importaciones', subtitle: 'Hogar, ropa y accesorios' },
+  { id: 'detalles', emoji: '💝', title: 'Detalles', subtitle: 'Regalos para cada ocasión' },
+  { id: 'sublimacion', emoji: '☕', title: 'Sublimación', subtitle: 'Recuerdos personalizados' },
 ]
 
-export function CategoryGrid({ onSelect }: { onSelect: (category: CategoryId) => void }) {
-  const select = (category: CategoryId) => {
+export function CategoryGrid({ onSelect }: { onSelect: (category: CatalogFilter) => void }) {
+  const select = (category: CatalogFilter) => {
     onSelect(category)
     document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' })
   }

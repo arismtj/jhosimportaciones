@@ -1,1 +1,2 @@
-/* /index.html 200
+# Cloudflare Pages: sin 404.html, Pages sirve la app (SPA) en rutas que no son archivos.
+# Las páginas de producto y categoría se generan como HTML estático al compilar.

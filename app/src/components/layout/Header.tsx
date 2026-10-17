@@ -1,3 +1,4 @@
+import { useEffect, useRef, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../features/auth/AuthContext'
 import { useCart } from '../../features/cart/CartContext'
@@ -6,25 +7,38 @@ import { Brand } from '../common/Brand'
 interface HeaderProps {
   onOpenCart?: () => void
   compact?: boolean
+  storeNav?: ReactNode
 }
 
-export function Header({ onOpenCart, compact = false }: HeaderProps) {
+export function Header({ onOpenCart, compact = false, storeNav }: HeaderProps) {
   const { count } = useCart()
   const { user, displayName } = useAuth()
+  const headerRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const header = headerRef.current
+    if (!header) return
+    const sync = () => document.documentElement.style.setProperty('--sticky-offset', `${Math.ceil(header.getBoundingClientRect().height)}px`)
+    sync()
+    const observer = new ResizeObserver(sync)
+    observer.observe(header)
+    return () => observer.disconnect()
+  }, [])
+
   const accountLabel = user ? displayName.split(' ')[0] || 'Mi cuenta' : 'Ingresar'
 
   return (
     <>
       {!compact && <div className="announcement"><span>✦</span> Regalos con intención, detalles que enamoran <span>✦</span></div>}
-      <header className="site-header">
+      <header className="site-header" ref={headerRef}>
         <div className="wrap header-inner">
           <Brand />
           {!compact && (
             <nav className="main-nav" aria-label="Navegación principal">
-              <a href="#inicio">Inicio</a>
-              <a href="#catalogo">Tienda</a>
-              <a href="#categorias">Categorías</a>
-              <a href="#nosotros">Nosotros</a>
+              <a href="/#inicio">Inicio</a>
+              <a href="/#catalogo">Tienda</a>
+              <a href="/#categorias">Categorías</a>
+              <a href="/#nosotros">Nosotros</a>
             </nav>
           )}
           <div className="header-actions">
@@ -40,6 +54,7 @@ export function Header({ onOpenCart, compact = false }: HeaderProps) {
             )}
           </div>
         </div>
+        {storeNav}
       </header>
     </>
   )

@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/prerender.mjs",
     "preview": "vite preview",
     "catalog:audit": "node scripts/import-reference-catalog.mjs --check-images",
     "catalog:fetch": "node scripts/import-reference-catalog.mjs --fetch --check-images",
-    "catalog:import": "node scripts/import-reference-catalog.mjs --execute --check-images"
+    "catalog:import": "node scripts/import-reference-catalog.mjs --execute --check-images",
+    "prerender": "node scripts/prerender.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",
