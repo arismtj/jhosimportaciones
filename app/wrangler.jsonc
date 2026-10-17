@@ -1,0 +1,12 @@
+{
+  // Cloudflare Workers (archivos estáticos). Se publica con `npx wrangler deploy` tras `npm run build`.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "jhosimportaciones",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // /producto/x sirve producto/x.html; rutas sin archivo cargan la app (SPA)
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "single-page-application"
+  }
+}
