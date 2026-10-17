@@ -1,0 +1,27 @@
+{
+  "sourceUrl": "https://jhos-importaciones-tienda.wigglyemu17.chatgpt.site/api/products",
+  "fetchedAt": "2026-10-17T02:42:06.222Z",
+  "sourceSha256": "b9777f1788034668b49457d5107664d76c35af7b037487cd85035f88d7a48921",
+  "stats": {
+    "products": 271,
+    "families": {
+      "Importaciones": 151,
+      "Detalles": 63,
+      "Sublimación": 57
+    },
+    "subcategories": 12,
+    "availability": {
+      "inStock": 268,
+      "outOfStock": 3,
+      "madeToOrder": 0
+    },
+    "priceRanges": 5,
+    "images": 295,
+    "uniqueImages": 295,
+    "svgImages": 13
+  },
+  "warnings": [
+    "Nombre repetido “zapatillas” en los IDs: 190, 1ed17d34-a4d4-4747-a04d-f058ade278de, c0ffbd79-c431-418b-a1dd-6507d2098140.",
+    "Nombre repetido “pack de reloj con  billetera” en los IDs: 99fd33f3-6833-4de4-b644-6db8ab08c685, 61a85a43-112f-4947-81ef-2abcdbda0f8f."
+  ]
+}

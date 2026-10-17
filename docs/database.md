@@ -6,6 +6,7 @@ Las migraciones locales definen el modelo comercial, pero no se han aplicado al 
 
 - `001_store_schema.sql`: perfiles, categorías jerárquicas, productos, imágenes, variantes, favoritos, pedidos y personalizaciones.
 - `002_rls_policies.sql`: permisos mínimos, políticas RLS, función segura de creación de pedidos y bucket público `product-images` con escritura exclusiva para administradores.
+- `003_catalog_import_support.sql`: trazabilidad del origen, ejecuciones de importación, errores y reemplazo transaccional de galerías para el proceso administrativo.
 - `app/src/types/database.ts`: contrato TypeScript usado por el cliente Supabase.
 - `catalog.ts` y `orders.ts`: capa de acceso a datos preparada para las siguientes fases.
 
@@ -26,7 +27,7 @@ Antes de aplicar los archivos al Supabase remoto:
 
 1. Revisar el proyecto de destino y crear un respaldo.
 2. Probar las migraciones en un proyecto de desarrollo o con Supabase CLI local.
-3. Aplicar `001_store_schema.sql` y después `002_rls_policies.sql`.
+3. Aplicar `001_store_schema.sql`, `002_rls_policies.sql` y `003_catalog_import_support.sql`, en ese orden.
 4. Regenerar los tipos desde el esquema remoto y comparar el resultado con `app/src/types/database.ts`.
 5. Ejecutar pruebas de RLS para visitantes, clientes y administradores.
 

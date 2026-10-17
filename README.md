@@ -26,6 +26,8 @@ Nunca se debe exponer `service_role` ni otra clave secreta dentro de variables `
 
 El esquema versionado está en `supabase/migrations`. Su diseño, políticas de acceso y procedimiento de aplicación se documentan en `docs/database.md`. Las migraciones deben revisarse y probarse antes de aplicarlas a un proyecto remoto.
 
+La auditoría y el importador idempotente del catálogo se describen en `docs/catalog-import.md`. Los comandos de auditoría funcionan en modo local y no escriben en Supabase.
+
 ## Compilación
 
 ```bash

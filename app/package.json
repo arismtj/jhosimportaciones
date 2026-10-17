@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "catalog:audit": "node scripts/import-reference-catalog.mjs --check-images",
+    "catalog:fetch": "node scripts/import-reference-catalog.mjs --fetch --check-images",
+    "catalog:import": "node scripts/import-reference-catalog.mjs --execute --check-images"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",
@@ -18,6 +21,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "sharp": "^0.35.5",
     "typescript": "^7.0.2",
     "vite": "^8.3.4"
   }

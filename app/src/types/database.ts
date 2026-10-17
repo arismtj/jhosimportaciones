@@ -3,6 +3,72 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      catalog_import_runs: {
+        Row: {
+          id: string
+          source_url: string
+          source_sha256: string
+          source_product_count: number
+          status: Database['public']['Enums']['catalog_import_status']
+          imported_product_count: number
+          imported_image_count: number
+          failed_image_count: number
+          summary: Json
+          created_by: string | null
+          started_at: string
+          finished_at: string | null
+        }
+        Insert: {
+          id?: string
+          source_url: string
+          source_sha256: string
+          source_product_count: number
+          status?: Database['public']['Enums']['catalog_import_status']
+          imported_product_count?: number
+          imported_image_count?: number
+          failed_image_count?: number
+          summary?: Json
+          created_by?: string | null
+          started_at?: string
+          finished_at?: string | null
+        }
+        Update: Partial<Database['public']['Tables']['catalog_import_runs']['Insert']>
+        Relationships: []
+      }
+      catalog_import_issues: {
+        Row: {
+          id: string
+          import_run_id: string
+          external_id: string | null
+          stage: string
+          code: string
+          message: string
+          source_url: string | null
+          details: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          import_run_id: string
+          external_id?: string | null
+          stage: string
+          code: string
+          message: string
+          source_url?: string | null
+          details?: Json
+          created_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['catalog_import_issues']['Insert']>
+        Relationships: [
+          {
+            foreignKeyName: 'catalog_import_issues_import_run_id_fkey'
+            columns: ['import_run_id']
+            isOneToOne: false
+            referencedRelation: 'catalog_import_runs'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       profiles: {
         Row: {
           id: string
@@ -89,6 +155,11 @@ export type Database = {
           customizable: boolean
           featured: boolean
           published: boolean
+          source_system: string | null
+          source_version: number | null
+          source_updated_at: string | null
+          source_metadata: Json
+          latest_import_run_id: string | null
           created_at: string
           updated_at: string
         }
@@ -107,6 +178,11 @@ export type Database = {
           customizable?: boolean
           featured?: boolean
           published?: boolean
+          source_system?: string | null
+          source_version?: number | null
+          source_updated_at?: string | null
+          source_metadata?: Json
+          latest_import_run_id?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -117,6 +193,13 @@ export type Database = {
             columns: ['category_id']
             isOneToOne: false
             referencedRelation: 'categories'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'products_latest_import_run_id_fkey'
+            columns: ['latest_import_run_id']
+            isOneToOne: false
+            referencedRelation: 'catalog_import_runs'
             referencedColumns: ['id']
           },
         ]
@@ -130,6 +213,9 @@ export type Database = {
           alt_text: string
           sort_order: number
           is_primary: boolean
+          source_sha256: string | null
+          source_mime_type: string | null
+          import_run_id: string | null
           created_at: string
         }
         Insert: {
@@ -140,6 +226,9 @@ export type Database = {
           alt_text?: string
           sort_order?: number
           is_primary?: boolean
+          source_sha256?: string | null
+          source_mime_type?: string | null
+          import_run_id?: string | null
           created_at?: string
         }
         Update: Partial<Database['public']['Tables']['product_images']['Insert']>
@@ -149,6 +238,13 @@ export type Database = {
             columns: ['product_id']
             isOneToOne: false
             referencedRelation: 'products'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'product_images_import_run_id_fkey'
+            columns: ['import_run_id']
+            isOneToOne: false
+            referencedRelation: 'catalog_import_runs'
             referencedColumns: ['id']
           },
         ]
@@ -342,6 +438,13 @@ export type Database = {
           total: number | null
         }[]
       }
+      replace_product_images: {
+        Args: {
+          p_product_id: string
+          p_images: Json
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       user_role: 'customer' | 'admin'
@@ -349,6 +452,7 @@ export type Database = {
       price_mode: 'fixed' | 'from'
       order_status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'shipped' | 'completed' | 'cancelled'
       delivery_method: 'pickup' | 'delivery'
+      catalog_import_status: 'running' | 'succeeded' | 'partial' | 'failed'
     }
     CompositeTypes: Record<string, never>
   }
