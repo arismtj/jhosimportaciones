@@ -1,12 +1,15 @@
 import { Link } from 'react-router-dom'
 import { advisors } from '../config/checkout'
-import { activePromotions, formatPeruDate } from '../config/promotions'
+import { useEffect, useState } from 'react'
+import { activePromotions, formatPeruDate, type Promotion } from '../config/promotions'
+import { getActivePromotions } from '../services/supabase/promotions'
 import { content } from '../../shared/seo.mjs'
 import { StoreLayout } from '../components/layout/StoreLayout'
 import { useSeo } from '../seo/useSeo'
 
 export function PromotionsPage() {
-  const list = activePromotions()
+  const [list, setList] = useState<Promotion[]>(activePromotions)
+  useEffect(() => { void getActivePromotions().then(setList) }, [])
   const seo = content.pages.promociones!
   useSeo({ title: seo.title, description: seo.description, path: '/promociones' })
 
@@ -25,7 +28,7 @@ export function PromotionsPage() {
             return (
               <article className="promo-card" key={promotion.id}>
                 {promotion.media && (
-                  promotion.media.endsWith('.mp4')
+                  (promotion.mediaType ? promotion.mediaType === 'video' : /\.(mp4|webm|mov)$/i.test(promotion.media))
                     ? <video src={promotion.media} controls playsInline preload="metadata" aria-label={`Video de la promoción ${promotion.title}`} />
                     : <img src={promotion.media} alt={promotion.title} loading="lazy" />
                 )}

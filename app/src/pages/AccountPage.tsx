@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Footer } from '../components/layout/Footer'
 import { Header } from '../components/layout/Header'
 import { useAuth } from '../features/auth/AuthContext'
@@ -35,6 +35,7 @@ export function AccountPage() {
           <div><span>Correo</span><strong>{email}</strong></div>
           <span className="role-badge">Rol: {role === 'admin' ? 'Administrador' : 'Cliente'}</span>
         </div>
+        {role === 'admin' && <div className="dashboard-card"><h2>Administración de la tienda</h2><p>Sube productos, cambia precios y publica promociones.</p><Link className="btn btn-primary" to="/administracion">Ir al panel de administración →</Link></div>}
         <div className="dashboard-card"><h2>Panel del cliente</h2><p>Esta área queda preparada para direcciones, favoritos e historial de pedidos.</p></div>
         {signOutError && <p className="form-error" role="alert">{signOutError}</p>}
         <button className="btn btn-primary" type="button" disabled={signingOut} onClick={() => void handleSignOut()}>{signingOut ? 'Cerrando sesión…' : 'Cerrar sesión'}</button>

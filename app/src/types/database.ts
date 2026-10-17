@@ -69,6 +69,36 @@ export type Database = {
           },
         ]
       }
+      promotions: {
+        Row: {
+          id: string
+          title: string
+          body: string
+          media_url: string | null
+          media_type: 'image' | 'video' | null
+          starts_on: string
+          ends_on: string
+          active: boolean
+          sort_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          body?: string
+          media_url?: string | null
+          media_type?: 'image' | 'video' | null
+          starts_on?: string
+          ends_on: string
+          active?: boolean
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['promotions']['Insert']>
+        Relationships: []
+      }
       profiles: {
         Row: {
           id: string
@@ -422,6 +452,9 @@ export type Database = {
     }
     Views: Record<string, never>
     Functions: {
+      grant_admin: { Args: { p_email: string }; Returns: string }
+      revoke_admin: { Args: { p_email: string }; Returns: undefined }
+      list_admins: { Args: Record<string, never>; Returns: { email: string; has_logged_in: boolean }[] }
       create_order: {
         Args: {
           p_customer_name: string

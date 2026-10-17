@@ -4,6 +4,7 @@ export interface Promotion {
   text: string
   /** Video o imagen de la promoción */
   media?: string
+  mediaType?: 'image' | 'video'
   /** Fechas en hora de Perú, formato AAAA-MM-DD (inclusive) */
   start: string
   end: string

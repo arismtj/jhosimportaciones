@@ -5,21 +5,15 @@ function requireClient() {
   return supabase
 }
 
-function getOAuthRedirectUrl() {
-  const isLocalDevelopment =
-    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') &&
-    window.location.port === '5173'
-
-  return isLocalDevelopment
-    ? 'http://localhost:5173/mi-cuenta'
-    : `${window.location.origin}/mi-cuenta`
+function getOAuthRedirectUrl(path = '/mi-cuenta') {
+  return `${window.location.origin}${path}`
 }
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(redirectPath = '/mi-cuenta') {
   const client = requireClient()
   const { error } = await client.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: getOAuthRedirectUrl() },
+    options: { redirectTo: getOAuthRedirectUrl(redirectPath) },
   })
   if (error) throw error
 }

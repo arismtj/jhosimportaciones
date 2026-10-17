@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import { WhatsAppButton } from './components/common/WhatsAppButton'
 import { ProtectedRoute } from './features/auth/ProtectedRoute'
 import { HomePage } from './pages/HomePage'
@@ -20,6 +20,7 @@ function PageLoading() {
 }
 
 export function App() {
+  const isAdmin = useLocation().pathname.startsWith('/administracion')
   return (
     <>
       <Suspense fallback={<PageLoading />}>
@@ -34,13 +35,11 @@ export function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/mi-cuenta" element={<Seo title="Mi cuenta | JHOS Importaciones" noindex><AccountPage /></Seo>} />
           </Route>
-          <Route element={<ProtectedRoute requiredRole="admin" />}>
-            <Route path="/administracion" element={<Seo title="Administración | JHOS Importaciones" noindex><AdminPage /></Seo>} />
-          </Route>
+          <Route path="/administracion" element={<Seo title="Panel de administración | JHOS" noindex><AdminPage /></Seo>} />
           <Route path="*" element={<Seo title="Página no encontrada | JHOS Importaciones" noindex><NotFoundPage /></Seo>} />
         </Routes>
       </Suspense>
-      <WhatsAppButton />
+      {!isAdmin && <WhatsAppButton />}
     </>
   )
 }
