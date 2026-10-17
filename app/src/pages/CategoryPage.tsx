@@ -37,7 +37,7 @@ function CategoryView() {
     }
     let active = true
     setLoading(true)
-    const ids = category.parent_id ? [category.id] : categories.filter((item) => item.parent_id === category.id).map((item) => item.id)
+    const ids = category.parent_id ? [category.id] : [category.id, ...categories.filter((item) => item.parent_id === category.id).map((item) => item.id)]
     getCatalog({ categoryIds: ids, page, pageSize: PAGE_SIZE }, categories)
       .then((result) => { if (active) { setProducts(result.products); setTotal(result.total) } })
       .catch(() => { if (active) { setProducts([]); setTotal(0) } })

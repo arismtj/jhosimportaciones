@@ -13,6 +13,11 @@ function load(force = false) {
   return cache
 }
 
+/** Olvida el menú guardado para que se vuelva a pedir (tras editarlo en el panel). */
+export function resetCategories() {
+  cache = null
+}
+
 export const familyOrder = new Map([
   ['importaciones', 0],
   ['detalles', 1],
@@ -42,9 +47,8 @@ export function useCategories() {
     return () => { active = false }
   }, [version])
 
-  const families = categories
-    .filter((category) => category.parent_id === null)
-    .sort((left, right) => (familyOrder.get(left.slug) ?? 99) - (familyOrder.get(right.slug) ?? 99))
+  // El orden viene de la base de datos (sort_order), editable desde el panel
+  const families = categories.filter((category) => category.parent_id === null)
   const subcategoriesOf = (familyId: string) => categories.filter((category) => category.parent_id === familyId)
   const reload = useCallback(() => {
     setLoaded(false)

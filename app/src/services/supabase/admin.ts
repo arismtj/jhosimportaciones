@@ -200,3 +200,100 @@ export async function revokeAdmin(email: string) {
   const { error } = await requireSupabase().rpc('revoke_admin', { p_email: email })
   if (error) throw new Error(friendly(error, 'No pudimos quitar el acceso.'))
 }
+
+// ---------- Menús (categorías) y páginas ----------
+export type MenuRow = Database['public']['Tables']['categories']['Row']
+export type PageRow = Database['public']['Tables']['pages']['Row']
+
+function plainSlug(value: string) {
+  return value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'seccion'
+}
+
+function uniqueSlug(name: string, taken: Iterable<string>) {
+  const used = new Set(taken)
+  const base = plainSlug(name)
+  let slug = base
+  for (let index = 2; used.has(slug); index += 1) slug = `${base}-${index}`
+  return slug
+}
+
+export async function listMenus(): Promise<{ menus: MenuRow[]; productCount: Map<string, number> }> {
+  const client = requireSupabase()
+  const [categories, products] = await Promise.all([
+    client.from('categories').select('*').order('sort_order').order('name'),
+    client.from('products').select('category_id'),
+  ])
+  if (categories.error) throw new Error(friendly(categories.error, 'No pudimos cargar el menú.'))
+  const productCount = new Map<string, number>()
+  for (const row of products.data ?? []) productCount.set(row.category_id, (productCount.get(row.category_id) ?? 0) + 1)
+  return { menus: categories.data, productCount }
+}
+
+export async function createMenu(name: string, parentId: string | null, all: MenuRow[]) {
+  const siblings = all.filter((item) => item.parent_id === parentId)
+  const { error } = await requireSupabase().from('categories').insert({
+    name: name.trim(),
+    parent_id: parentId,
+    slug: uniqueSlug(name, all.map((item) => item.slug)),
+    sort_order: siblings.reduce((max, item) => Math.max(max, item.sort_order), -1) + 1,
+    active: true,
+  })
+  if (error) throw new Error(friendly(error, 'No pudimos crear el menú.'))
+}
+
+export async function updateMenu(id: string, values: { name?: string; active?: boolean }) {
+  const { error } = await requireSupabase().from('categories').update(values).eq('id', id)
+  if (error) throw new Error(friendly(error, 'No pudimos guardar el cambio.'))
+}
+
+/** Guarda el nuevo orden de una lista de hermanos (0, 1, 2…). */
+export async function reorderMenus(ordered: MenuRow[]) {
+  const client = requireSupabase()
+  const results = await Promise.all(ordered.map((item, index) => client.from('categories').update({ sort_order: index }).eq('id', item.id)))
+  const failed = results.find((result) => result.error)
+  if (failed?.error) throw new Error(friendly(failed.error, 'No pudimos cambiar el orden.'))
+}
+
+export async function deleteMenu(menu: MenuRow, all: MenuRow[], productCount: Map<string, number>) {
+  const children = all.filter((item) => item.parent_id === menu.id)
+  if (children.length) throw new Error(`Primero elimina o mueve los ${children.length} submenús de «${menu.name}».`)
+  const count = productCount.get(menu.id) ?? 0
+  if (count) throw new Error(`«${menu.name}» tiene ${count} producto(s). Cámbialos de categoría o usa «Ocultar» en lugar de eliminar.`)
+  const { error } = await requireSupabase().from('categories').delete().eq('id', menu.id)
+  if (error) throw new Error(friendly(error, 'No pudimos eliminar el menú.'))
+}
+
+export async function listAdminPages(): Promise<PageRow[]> {
+  const { data, error } = await requireSupabase().from('pages').select('*').order('sort_order').order('title')
+  if (error) throw new Error(friendly(error, 'No pudimos cargar las páginas.'))
+  return data
+}
+
+export async function savePage(page: Partial<PageRow> & { title: string }, file: File | null, allPages: PageRow[]) {
+  const client = requireSupabase()
+  const values: Database['public']['Tables']['pages']['Update'] = {
+    title: page.title.trim(),
+    body: (page.body ?? '').trim(),
+    menu_id: page.menu_id ?? null,
+    published: page.published ?? true,
+    image_url: page.image_url ?? null,
+  }
+  if (file) values.image_url = await uploadFile(PROMO_BUCKET, 'pages', file)
+  const { error } = page.id
+    ? await client.from('pages').update(values).eq('id', page.id)
+    : await client.from('pages').insert({
+      ...values,
+      title: values.title!,
+      slug: uniqueSlug(page.title, allPages.map((item) => item.slug)),
+      sort_order: allPages.filter((item) => item.menu_id === (page.menu_id ?? null)).length,
+    })
+  if (error) throw new Error(friendly(error, 'No pudimos guardar la página.'))
+  if (file && page.image_url && !/^https?:/.test(page.image_url)) await client.storage.from(PROMO_BUCKET).remove([page.image_url])
+}
+
+export async function deletePage(page: PageRow) {
+  const client = requireSupabase()
+  const { error } = await client.from('pages').delete().eq('id', page.id)
+  if (error) throw new Error(friendly(error, 'No pudimos eliminar la página.'))
+  if (page.image_url && !/^https?:/.test(page.image_url)) await client.storage.from(PROMO_BUCKET).remove([page.image_url])
+}

@@ -6,6 +6,7 @@ import { HomePage } from './pages/HomePage'
 import { Seo } from './seo/useSeo'
 
 const AccountPage = lazy(() => import('./pages/AccountPage').then((module) => ({ default: module.AccountPage })))
+const ContentPage = lazy(() => import('./pages/ContentPage').then((module) => ({ default: module.ContentPage })))
 const AdminPage = lazy(() => import('./pages/AdminPage').then((module) => ({ default: module.AdminPage })))
 const LoginPage = lazy(() => import('./pages/LoginPage').then((module) => ({ default: module.LoginPage })))
 const RegisterPage = lazy(() => import('./pages/RegisterPage').then((module) => ({ default: module.RegisterPage })))
@@ -28,6 +29,7 @@ export function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/producto/:slug" element={<ProductPage />} />
           <Route path="/categoria/:slug" element={<CategoryPage />} />
+          <Route path="/pagina/:slug" element={<ContentPage />} />
           <Route path="/promociones" element={<PromotionsPage />} />
           <Route path="/regalos-navidad" element={<ChristmasPage />} />
           <Route path="/iniciar-sesion" element={<Seo title="Iniciar sesión | JHOS Importaciones" noindex><LoginPage /></Seo>} />

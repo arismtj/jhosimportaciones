@@ -42,7 +42,7 @@ export function CatalogSection({ filter, onFilterChange, onProductAdded }: Catal
     const selected = categories.find((category) => category.slug === filter)
     if (!selected) return []
     if (selected.parent_id) return [selected.id]
-    return categories.filter((category) => category.parent_id === selected.id).map((category) => category.id)
+    return [selected.id, ...categories.filter((category) => category.parent_id === selected.id).map((category) => category.id)]
   }, [categories, filter])
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useCategories } from '../../features/catalog/useCategories'
+import { useMenuPages } from '../../features/catalog/useMenuPages'
 
 const sectionLinks = [
   { id: 'pagos', label: 'Medios de pago' },
@@ -59,6 +60,7 @@ interface StoreNavProps {
 
 export function StoreNav({ filter = 'todos', onSelect }: StoreNavProps) {
   const { families, subcategoriesOf, categories } = useCategories()
+  const menuPages = useMenuPages()
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const navRef = useRef<HTMLElement>(null)
   const { pathname } = useLocation()
@@ -104,6 +106,7 @@ export function StoreNav({ filter = 'todos', onSelect }: StoreNavProps) {
           <Link to="/#catalogo" className={allActive ? 'active' : ''} aria-current={allActive ? 'true' : undefined} onClick={select('todos')}>Todo el catálogo</Link>
           {families.map((family) => {
             const subcategories = subcategoriesOf(family.id)
+            const familyPages = menuPages.filter((page) => page.menu_id === family.id)
             const isOpen = openMenu === family.slug
             const isActive = activeFamily === family.slug
             return (
@@ -124,11 +127,14 @@ export function StoreNav({ filter = 'todos', onSelect }: StoreNavProps) {
                 >
                   {family.name}<span className="store-nav-caret" aria-hidden="true">▾</span>
                 </Link>
-                {subcategories.length > 0 && (
+                {(subcategories.length > 0 || familyPages.length > 0) && (
                   <div className="store-submenu" aria-label={`Subcategorías de ${family.name}`}>
                     <Link to={`/categoria/${family.slug}`} className={currentSlug === family.slug ? 'active' : ''} onClick={select(family.slug)}>Todo {family.name}</Link>
                     {subcategories.map((sub) => (
                       <Link key={sub.id} to={`/categoria/${sub.slug}`} className={currentSlug === sub.slug ? 'active' : ''} onClick={select(sub.slug)}>{sub.name}</Link>
+                    ))}
+                    {familyPages.map((page) => (
+                      <Link key={page.id} to={`/pagina/${page.slug}`} className={pathname === `/pagina/${page.slug}` ? 'active' : ''}>{page.title}</Link>
                     ))}
                   </div>
                 )}
@@ -139,6 +145,9 @@ export function StoreNav({ filter = 'todos', onSelect }: StoreNavProps) {
         <div className="store-nav-links">
           {isChristmasSeason() && <Link to="/regalos-navidad" className={`store-nav-promo${pathname === '/regalos-navidad' ? ' active' : ''}`}>🎄 Navidad</Link>}
           <Link to="/promociones" className={`store-nav-promo${pathname === '/promociones' ? ' active' : ''}`} aria-current={pathname === '/promociones' ? 'page' : undefined}>✦ Promociones</Link>
+          {menuPages.filter((page) => !page.menu_id).map((page) => (
+            <Link key={page.id} to={`/pagina/${page.slug}`} className={pathname === `/pagina/${page.slug}` ? 'active' : ''}>{page.title}</Link>
+          ))}
           {sectionLinks.map((link) => (
             <a key={link.id} href={sectionHref(`#${link.id}`)} className={activeSection === link.id ? 'active' : ''} aria-current={activeSection === link.id ? 'true' : undefined}>{link.label}</a>
           ))}

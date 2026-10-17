@@ -69,6 +69,34 @@ export type Database = {
           },
         ]
       }
+      pages: {
+        Row: {
+          id: string
+          slug: string
+          title: string
+          body: string
+          image_url: string | null
+          menu_id: string | null
+          published: boolean
+          sort_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          slug: string
+          title: string
+          body?: string
+          image_url?: string | null
+          menu_id?: string | null
+          published?: boolean
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['pages']['Insert']>
+        Relationships: []
+      }
       promotions: {
         Row: {
           id: string

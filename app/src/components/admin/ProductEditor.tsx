@@ -130,9 +130,11 @@ export function ProductEditor({ product, families, subcategoriesOf, onClose, onS
           <select value={draft.category_id} onChange={(event) => update('category_id', event.target.value)} required>
             <option value="">Elige una categoría…</option>
             {families.map((family) => (
-              <optgroup key={family.id} label={family.name}>
-                {subcategoriesOf(family.id).map((sub) => <option key={sub.id} value={sub.id}>{sub.name}</option>)}
-              </optgroup>
+              subcategoriesOf(family.id).length ? (
+                <optgroup key={family.id} label={family.name}>
+                  {subcategoriesOf(family.id).map((sub) => <option key={sub.id} value={sub.id}>{sub.name}</option>)}
+                </optgroup>
+              ) : <option key={family.id} value={family.id}>{family.name}</option>
             ))}
           </select>
         </label>
