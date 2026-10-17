@@ -1,0 +1,5 @@
+JHOS Importaciones - versión corregida.
+
+Extrae el ZIP y abre JHOS_Importaciones_Tienda_CORREGIDA.html con Edge o Chrome.
+No se requieren carpetas CSS, JS ni conexión a internet.
+Productos y precios son de ejemplo. La compra por WhatsApp se habilitará con tu número comercial.
