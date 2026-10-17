@@ -97,6 +97,12 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['pages']['Insert']>
         Relationships: []
       }
+      site_content: {
+        Row: { key: string; value: Json; updated_at: string }
+        Insert: { key: string; value?: Json; updated_at?: string }
+        Update: { key?: string; value?: Json; updated_at?: string }
+        Relationships: []
+      }
       promotions: {
         Row: {
           id: string

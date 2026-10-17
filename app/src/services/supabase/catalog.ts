@@ -2,7 +2,7 @@ import type { Tables } from '../../types/database'
 import type { PriceMode, Product, ProductTint } from '../../types/product'
 import { requireSupabase } from './client'
 
-export type CatalogCategory = Pick<Tables<'categories'>, 'id' | 'parent_id' | 'slug' | 'name'>
+export type CatalogCategory = Pick<Tables<'categories'>, 'id' | 'parent_id' | 'slug' | 'name'> & { description?: string | null }
 export type CatalogImage = Pick<
   Tables<'product_images'>,
   'id' | 'storage_path' | 'source_url' | 'alt_text' | 'sort_order' | 'is_primary'

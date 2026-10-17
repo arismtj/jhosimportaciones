@@ -2,14 +2,11 @@ import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 
 import { Link, useLocation } from 'react-router-dom'
 import { useCategories } from '../../features/catalog/useCategories'
 import { useMenuPages } from '../../features/catalog/useMenuPages'
+import { useSiteContent } from '../../features/content/SiteContentContext'
+import { SmartLink } from '../common/SmartLink'
 
-const sectionLinks = [
-  { id: 'pagos', label: 'Medios de pago' },
-  { id: 'ayuda', label: 'Cómo comprar' },
-  { id: 'redes', label: 'Redes' },
-]
 // Las preguntas frecuentes cuentan como parte de «Cómo comprar»
-const spiedSections = ['catalogo', ...sectionLinks.map((link) => link.id), 'preguntas']
+const spiedSections = ['catalogo', 'pagos', 'ayuda', 'redes', 'preguntas']
 const sectionAlias: Record<string, string> = { preguntas: 'ayuda' }
 
 /** Devuelve el id de la sección que está bajo la barra fija, o null si ninguna. */
@@ -61,6 +58,7 @@ interface StoreNavProps {
 export function StoreNav({ filter = 'todos', onSelect }: StoreNavProps) {
   const { families, subcategoriesOf, categories } = useCategories()
   const menuPages = useMenuPages()
+  const { navigation } = useSiteContent()
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const navRef = useRef<HTMLElement>(null)
   const { pathname } = useLocation()
@@ -87,10 +85,10 @@ export function StoreNav({ filter = 'todos', onSelect }: StoreNavProps) {
 
   useEffect(() => { setOpenMenu(null) }, [pathname])
 
-  /** En la portada, intercepta el enlace y filtra el catálogo en el sitio. */
+  /** Cada menú abre su propia página (/categoria/…), mejor para Google. Solo «Todo el catálogo» filtra en la portada. */
   const select = (slug: string) => (event: ReactMouseEvent) => {
     setOpenMenu(null)
-    if (!onSelect || event.metaKey || event.ctrlKey || event.shiftKey) return
+    if (slug !== 'todos' || !onSelect || event.metaKey || event.ctrlKey || event.shiftKey) return
     event.preventDefault()
     onSelect(slug)
     window.requestAnimationFrame(() => document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' }))
@@ -144,13 +142,16 @@ export function StoreNav({ filter = 'todos', onSelect }: StoreNavProps) {
         </div>
         <div className="store-nav-links">
           {isChristmasSeason() && <Link to="/regalos-navidad" className={`store-nav-promo${pathname === '/regalos-navidad' ? ' active' : ''}`}>🎄 Navidad</Link>}
-          <Link to="/promociones" className={`store-nav-promo${pathname === '/promociones' ? ' active' : ''}`} aria-current={pathname === '/promociones' ? 'page' : undefined}>✦ Promociones</Link>
           {menuPages.filter((page) => !page.menu_id).map((page) => (
             <Link key={page.id} to={`/pagina/${page.slug}`} className={pathname === `/pagina/${page.slug}` ? 'active' : ''}>{page.title}</Link>
           ))}
-          {sectionLinks.map((link) => (
-            <a key={link.id} href={sectionHref(`#${link.id}`)} className={activeSection === link.id ? 'active' : ''} aria-current={activeSection === link.id ? 'true' : undefined}>{link.label}</a>
-          ))}
+          {navigation.store.map((link) => {
+            const hash = link.href.split('#')[1]
+            const href = hash && link.href.startsWith('/#') ? sectionHref(`#${hash}`) : link.href
+            const active = hash ? activeSection === hash : pathname === link.href
+            const promo = link.href === '/promociones' || link.href === '/regalos-navidad'
+            return <SmartLink key={`${link.label}${link.href}`} href={href} className={`${promo ? 'store-nav-promo' : ''}${active ? ' active' : ''}`.trim() || undefined}>{link.label}</SmartLink>
+          })}
         </div>
       </div>
     </nav>

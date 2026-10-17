@@ -1,18 +1,19 @@
 import { advisors } from '../../config/checkout'
-import { faq } from '../../config/faq'
+import { useSiteContent } from '../../features/content/SiteContentContext'
 import { defaultGreeting, whatsappLink } from '../../config/whatsapp'
 
 export function FaqSection() {
+  const { faq } = useSiteContent()
   return (
     <section id="preguntas" className="faq-section wrap section-pad" aria-labelledby="faqTitle">
       <div className="faq-heading">
-        <div className="section-kicker">ANTES DE ELEGIR</div>
-        <h2 id="faqTitle">Resolvemos <em>tus dudas</em></h2>
-        <p>Lo que más nos preguntan sobre pedidos, envíos y pagos.</p>
+        <div className="section-kicker">{faq.kicker}</div>
+        <h2 id="faqTitle">{faq.title} <em>{faq.accent}</em></h2>
+        {faq.text && <p>{faq.text}</p>}
       </div>
       <div className="faq-grid">
-        {faq.map((item, index) => (
-          <details className="faq-item" key={item.id} open={index === 0}>
+        {faq.items.map((item, index) => (
+          <details className="faq-item" key={index} open={index === 0}>
             <summary>{item.question}<span className="faq-icon" aria-hidden="true" /></summary>
             <p>{item.answer}</p>
           </details>

@@ -2,7 +2,9 @@ import { useEffect, useRef, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../features/auth/AuthContext'
 import { useCart } from '../../features/cart/CartContext'
+import { useSiteContent } from '../../features/content/SiteContentContext'
 import { Brand } from '../common/Brand'
+import { SmartLink } from '../common/SmartLink'
 
 interface HeaderProps {
   onOpenCart?: () => void
@@ -14,6 +16,7 @@ export function Header({ onOpenCart, compact = false, storeNav }: HeaderProps) {
   const { count } = useCart()
   const { user, displayName } = useAuth()
   const headerRef = useRef<HTMLElement>(null)
+  const site = useSiteContent()
 
   useEffect(() => {
     const header = headerRef.current
@@ -29,16 +32,13 @@ export function Header({ onOpenCart, compact = false, storeNav }: HeaderProps) {
 
   return (
     <>
-      {!compact && <div className="announcement"><span>✦</span> Regalos con intención, detalles que enamoran <span>✦</span></div>}
+      {!compact && site.announcement.text.trim() && <div className="announcement"><span>✦</span> {site.announcement.text} <span>✦</span></div>}
       <header className="site-header" ref={headerRef}>
         <div className="wrap header-inner">
           <Brand />
           {!compact && (
             <nav className="main-nav" aria-label="Navegación principal">
-              <a href="/#inicio">Inicio</a>
-              <a href="/#catalogo">Tienda</a>
-              <a href="/#categorias">Categorías</a>
-              <a href="/#nosotros">Nosotros</a>
+              {site.navigation.header.map((item) => <SmartLink key={`${item.label}${item.href}`} href={item.href}>{item.label}</SmartLink>)}
             </nav>
           )}
           <div className="header-actions">

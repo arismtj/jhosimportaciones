@@ -3,15 +3,18 @@ import { business } from '../../config/business'
 import { advisors } from '../../config/checkout'
 import { socialNetworks } from '../../config/social'
 import { defaultGreeting, whatsappLink } from '../../config/whatsapp'
+import { useSiteContent } from '../../features/content/SiteContentContext'
 import { Brand } from '../common/Brand'
 
 export function Footer() {
+  const { footer } = useSiteContent()
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(footer.address)}`
   return (
     <footer className="site-footer">
       <div className="wrap footer-main footer-grid">
         <div className="footer-brand">
           <Brand footer />
-          <p>Personalizamos momentos, creamos emociones. Regalos, importaciones y detalles hechos a tu manera.</p>
+          <p>{footer.tagline}</p>
           <div className="footer-social" aria-label="Redes sociales">
             {socialNetworks.map((network) => (
               <a key={network.id} className={`footer-social-${network.id}`} href={network.links[0]!.href} target="_blank" rel="noopener noreferrer" aria-label={network.name} title={network.name}>{network.icon}</a>
@@ -28,15 +31,15 @@ export function Footer() {
               <span aria-hidden="true">↗</span>
             </a>
           ))}
-          <a href={`mailto:${business.email}`}>{business.email}</a>
-          <span>{business.hours}</span>
+          {footer.email && <a href={`mailto:${footer.email}`}>{footer.email}</a>}
+          {footer.hours && <span>{footer.hours}</span>}
         </div>
 
         <div className="footer-links">
           <strong>Visítanos</strong>
-          <a href={business.mapsUrl} target="_blank" rel="noopener noreferrer">{business.address} <span aria-hidden="true">↗</span></a>
-          <span>Recojo: {business.pickup}</span>
-          <span>{business.coverage}</span>
+          {footer.address && <a href={mapsUrl} target="_blank" rel="noopener noreferrer">{footer.address} <span aria-hidden="true">↗</span></a>}
+          {footer.pickup && <span>Recojo: {footer.pickup}</span>}
+          {footer.coverage && <span>{footer.coverage}</span>}
         </div>
 
         <div className="footer-links">

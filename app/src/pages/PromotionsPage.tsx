@@ -6,20 +6,22 @@ import { getActivePromotions } from '../services/supabase/promotions'
 import { content } from '../../shared/seo.mjs'
 import { StoreLayout } from '../components/layout/StoreLayout'
 import { useSeo } from '../seo/useSeo'
+import { useSiteContent } from '../features/content/SiteContentContext'
 
 export function PromotionsPage() {
   const [list, setList] = useState<Promotion[]>(activePromotions)
   useEffect(() => { void getActivePromotions().then(setList) }, [])
   const seo = content.pages.promociones!
+  const { promotions: hero } = useSiteContent()
   useSeo({ title: seo.title, description: seo.description, path: '/promociones' })
 
   return (
     <StoreLayout className="promotions-page">
         <section className="promotions-hero">
           <div className="wrap">
-            <div className="section-kicker">EXCLUSIVO PARA TI</div>
-            <h1>Promociones que <em>te van a encantar.</em></h1>
-            <p>Descubre nuestras novedades y oportunidades. Revisa las condiciones de cada promoción y consulta disponibilidad por WhatsApp.</p>
+            <div className="section-kicker">{hero.kicker}</div>
+            <h1>{hero.title} <em>{hero.accent}</em></h1>
+            {hero.text && <p>{hero.text}</p>}
           </div>
         </section>
         <section className="wrap section-pad promotions-list" aria-label="Promociones vigentes">

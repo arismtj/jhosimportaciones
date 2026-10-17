@@ -241,7 +241,7 @@ export async function createMenu(name: string, parentId: string | null, all: Men
   if (error) throw new Error(friendly(error, 'No pudimos crear el menú.'))
 }
 
-export async function updateMenu(id: string, values: { name?: string; active?: boolean }) {
+export async function updateMenu(id: string, values: { name?: string; active?: boolean; description?: string | null }) {
   const { error } = await requireSupabase().from('categories').update(values).eq('id', id)
   if (error) throw new Error(friendly(error, 'No pudimos guardar el cambio.'))
 }
@@ -296,4 +296,14 @@ export async function deletePage(page: PageRow) {
   const { error } = await client.from('pages').delete().eq('id', page.id)
   if (error) throw new Error(friendly(error, 'No pudimos eliminar la página.'))
   if (page.image_url && !/^https?:/.test(page.image_url)) await client.storage.from(PROMO_BUCKET).remove([page.image_url])
+}
+
+// ---------- Contenido del sitio ----------
+export async function saveSiteContent(value: unknown) {
+  const { error } = await requireSupabase().from('site_content').upsert({ key: 'main', value: value as never })
+  if (error) throw new Error(friendly(error, 'No pudimos guardar los textos.'))
+}
+
+export async function uploadSiteImage(file: File) {
+  return uploadFile(PROMO_BUCKET, 'site', file)
 }

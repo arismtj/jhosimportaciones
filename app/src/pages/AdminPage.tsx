@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ContentAdmin } from '../components/admin/ContentAdmin'
 import { MenuAdmin } from '../components/admin/MenuAdmin'
 import { PromotionsAdmin } from '../components/admin/PromotionsAdmin'
 import { ProductsAdmin } from '../components/admin/ProductsAdmin'
@@ -7,7 +8,7 @@ import { TeamAdmin } from '../components/admin/TeamAdmin'
 import { signInWithGoogle } from '../features/auth/authActions'
 import { useAuth } from '../features/auth/AuthContext'
 
-type Tab = 'products' | 'menu' | 'promotions' | 'team'
+type Tab = 'products' | 'menu' | 'content' | 'promotions' | 'team'
 
 function AdminLogin({ message, onSignOut }: { message?: string; onSignOut?: () => void }) {
   const [error, setError] = useState('')
@@ -51,7 +52,7 @@ export function AdminPage() {
       <header className="admin-top">
         <Link to="/" className="admin-brand"><img src="/brand-logo.webp" alt="" width="36" height="36" /><span>Panel JHOS</span></Link>
         <nav className="admin-tabs" aria-label="Secciones del panel">
-          {([['products', '🛍️ Productos'], ['menu', '🧭 Menú y páginas'], ['promotions', '✨ Promociones'], ['team', '👥 Equipo']] as const).map(([id, label]) => (
+          {([['products', '🛍️ Productos'], ['menu', '🧭 Menú y páginas'], ['content', '🏠 Contenido'], ['promotions', '✨ Promociones'], ['team', '👥 Equipo']] as const).map(([id, label]) => (
             <button type="button" key={id} className={tab === id ? 'active' : ''} onClick={() => setTab(id)}>{label}</button>
           ))}
         </nav>
@@ -64,6 +65,7 @@ export function AdminPage() {
       <main className="admin-main">
         {tab === 'products' && <ProductsAdmin notify={setToast} />}
         {tab === 'menu' && <MenuAdmin notify={setToast} />}
+        {tab === 'content' && <ContentAdmin notify={setToast} />}
         {tab === 'promotions' && <PromotionsAdmin notify={setToast} />}
         {tab === 'team' && <TeamAdmin notify={setToast} myEmail={email} />}
       </main>

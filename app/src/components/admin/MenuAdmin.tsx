@@ -16,6 +16,7 @@ export function MenuAdmin({ notify }: { notify: (message: string) => void }) {
   const [loading, setLoading] = useState(true)
   const [dialog, setDialog] = useState<NameDialog | null>(null)
   const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
   const [busy, setBusy] = useState(false)
   const [editingPage, setEditingPage] = useState<Partial<PageRow> | null>(null)
 
@@ -65,6 +66,7 @@ export function MenuAdmin({ notify }: { notify: (message: string) => void }) {
 
   const openDialog = (value: NameDialog) => {
     setName(value.mode === 'rename' ? value.menu.name : '')
+    setDescription(value.mode === 'rename' ? value.menu.description ?? '' : '')
     setDialog(value)
   }
 
@@ -73,7 +75,7 @@ export function MenuAdmin({ notify }: { notify: (message: string) => void }) {
     if (!dialog || !name.trim()) return
     const current = dialog
     setDialog(null)
-    if (current.mode === 'rename') void run(() => updateMenu(current.menu.id, { name: name.trim() }), 'Nombre actualizado ✅')
+    if (current.mode === 'rename') void run(() => updateMenu(current.menu.id, current.menu.parent_id ? { name: name.trim() } : { name: name.trim(), description: description.trim() || null }), 'Cambios guardados ✅')
     else if (current.mode === 'new-menu') void run(() => createMenu(name, null, menus), `Menú «${name.trim()}» creado ✅ Ahora agrégale submenús.`)
     else void run(() => createMenu(name, current.parent.id, menus), `Submenú «${name.trim()}» creado ✅ Ya puedes asignarle productos.`)
   }
@@ -159,8 +161,11 @@ export function MenuAdmin({ notify }: { notify: (message: string) => void }) {
       {dialog && (
         <div className="admin-dialog-backdrop" role="dialog" aria-modal="true" aria-labelledby="nameDialogTitle">
           <form className="admin-dialog" onSubmit={submitName}>
-            <h3 id="nameDialogTitle">{dialog.mode === 'rename' ? 'Cambiar nombre' : dialog.mode === 'new-menu' ? 'Nuevo menú' : `Nuevo submenú en «${dialog.parent.name}»`}</h3>
+            <h3 id="nameDialogTitle">{dialog.mode === 'rename' ? 'Editar menú' : dialog.mode === 'new-menu' ? 'Nuevo menú' : `Nuevo submenú en «${dialog.parent.name}»`}</h3>
             <input autoFocus value={name} maxLength={60} onChange={(event) => setName(event.target.value)} placeholder={dialog.mode === 'new-menu' ? 'Ej.: Día de la Madre' : 'Ej.: Cajas sorpresa'} required />
+            {dialog.mode === 'rename' && !dialog.menu.parent_id && (
+              <label className="admin-field"><span className="admin-label">Frase de la tarjeta en la portada <small>puedes empezar con un emoji</small></span><input value={description} maxLength={80} onChange={(event) => setDescription(event.target.value)} placeholder="Ej.: 💐 Regalos para mamá" /></label>
+            )}
             <div className="admin-dialog-actions">
               <button type="button" className="btn btn-outline" onClick={() => setDialog(null)}>Cancelar</button>
               <button type="submit" className="btn btn-primary">Guardar</button>

@@ -23,7 +23,7 @@ export function HomePage() {
       <main id="inicio">
         <Hero />
         <Benefits />
-        <CategoryGrid onSelect={setFilter} />
+        <CategoryGrid />
         <CatalogSection filter={filter} onFilterChange={setFilter} onProductAdded={() => setCartOpen(true)} />
         <StoreInfoSections />
         <StorySections />
