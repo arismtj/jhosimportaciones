@@ -10,7 +10,8 @@ interface HeaderProps {
 
 export function Header({ onOpenCart, compact = false }: HeaderProps) {
   const { count } = useCart()
-  const { user } = useAuth()
+  const { user, displayName } = useAuth()
+  const accountLabel = user ? displayName.split(' ')[0] || 'Mi cuenta' : 'Ingresar'
 
   return (
     <>
@@ -28,7 +29,8 @@ export function Header({ onOpenCart, compact = false }: HeaderProps) {
           )}
           <div className="header-actions">
             <Link className="account-link" to={user ? '/mi-cuenta' : '/iniciar-sesion'}>
-              {user ? 'Mi cuenta' : 'Ingresar'}
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg>
+              <span>{accountLabel}</span>
             </Link>
             {onOpenCart && (
               <button className="cart-button" type="button" onClick={onOpenCart} aria-label="Abrir carrito de compras">

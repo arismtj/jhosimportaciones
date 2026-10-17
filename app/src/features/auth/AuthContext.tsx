@@ -9,7 +9,10 @@ interface AuthContextValue {
   loading: boolean
   session: Session | null
   user: User | null
+  displayName: string
+  email: string
   role: UserRole | null
+  error: string | null
   signOut: () => Promise<void>
 }
 
@@ -20,9 +23,18 @@ function roleFromUser(user: User | null): UserRole | null {
   return role === 'admin' ? 'admin' : user ? 'customer' : null
 }
 
+function displayNameFromUser(user: User | null) {
+  if (!user) return ''
+  const metadata = user.user_metadata
+  const name = metadata?.full_name ?? metadata?.name ?? metadata?.display_name
+  if (typeof name === 'string' && name.trim()) return name.trim()
+  return user.email?.split('@')[0] ?? 'Cliente JHOS'
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(isSupabaseConfigured)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!supabase) {
@@ -31,15 +43,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     let active = true
-    void supabase.auth.getSession().then(({ data }) => {
+    void supabase.auth.getSession().then(({ data, error: sessionError }) => {
       if (active) {
         setSession(data.session)
+        setError(sessionError?.message ?? null)
         setLoading(false)
       }
     })
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession)
+      setError(null)
       setLoading(false)
     })
 
@@ -55,12 +69,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       session,
       user: session?.user ?? null,
+      displayName: displayNameFromUser(session?.user ?? null),
+      email: session?.user.email ?? '',
       role: roleFromUser(session?.user ?? null),
+      error,
       signOut: async () => {
-        if (supabase) await supabase.auth.signOut()
+        if (!supabase) return
+        const { error: signOutError } = await supabase.auth.signOut()
+        if (signOutError) throw signOutError
       },
     }),
-    [loading, session],
+    [error, loading, session],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

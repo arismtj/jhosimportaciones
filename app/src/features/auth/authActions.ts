@@ -1,4 +1,3 @@
-import type { Provider } from '@supabase/supabase-js'
 import { supabase } from '../../services/supabase/client'
 
 function requireClient() {
@@ -6,11 +5,21 @@ function requireClient() {
   return supabase
 }
 
-export async function signInWithOAuth(provider: Extract<Provider, 'google' | 'facebook'>) {
+function getOAuthRedirectUrl() {
+  const isLocalDevelopment =
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') &&
+    window.location.port === '5173'
+
+  return isLocalDevelopment
+    ? 'http://localhost:5173/mi-cuenta'
+    : `${window.location.origin}/mi-cuenta`
+}
+
+export async function signInWithGoogle() {
   const client = requireClient()
   const { error } = await client.auth.signInWithOAuth({
-    provider,
-    options: { redirectTo: `${window.location.origin}/mi-cuenta` },
+    provider: 'google',
+    options: { redirectTo: getOAuthRedirectUrl() },
   })
   if (error) throw error
 }
