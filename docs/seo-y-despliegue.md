@@ -18,46 +18,44 @@ Los datos se leen de Supabase con la clave pública (`VITE_SUPABASE_URL` y
 `VITE_SUPABASE_PUBLISHABLE_KEY`). Si Supabase no responde, usa el snapshot
 `catalog-source/reference-products.json` y lo avisa en el log.
 
-**Cuando cambies productos en Supabase, vuelve a desplegar** (por ejemplo con un
-*Deploy Hook* programado una vez al día) para regenerar páginas y sitemap.
+**Cuando cambies productos en Supabase, vuelve a desplegar** (desde Cloudflare: Deployments → «Retry build», o con un `git push`) para regenerar páginas y sitemap.
 
-## Variables de entorno (Vercel o Cloudflare)
+## Variables de build (Cloudflare)
+
+Workers & Pages → `jhosimportaciones` → Settings → Build → Variables:
 
 | Variable | Obligatoria | Ejemplo |
 |---|---|---|
 | `VITE_SUPABASE_URL` | Sí | `https://padlarnhwvvugxoftpnf.supabase.co` |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Sí | `sb_publishable_…` |
 | `VITE_SITE_URL` | Recomendada | `https://jhosimportaciones.com` |
+| `NODE_VERSION` | Recomendada | `22` |
 | `VITE_GA_MEASUREMENT_ID` | Opcional | `G-XXXXXXXXXX` (Google Analytics 4) |
 | `VITE_META_PIXEL_ID` | Opcional | `123456789012345` (Meta Pixel) |
 
 Nunca pongas la clave `service_role`/`sb_secret_` en estas variables.
 
-## Vercel
+## Cloudflare Workers (hosting)
 
-- Root Directory: `app` · Build Command: `npm run build` · Output: `dist`.
-- `app/vercel.json` sirve `/producto/x` desde `producto/x.html` (cleanUrls) y usa
-  `app-shell.html` como respaldo de la SPA.
-- Plan: el plan **Hobby** es solo para uso personal/no comercial. Una tienda requiere
-  el plan **Pro** o migrar a Cloudflare Pages.
-
-## Cloudflare Pages (alternativa gratuita con uso comercial)
-
-- Framework: ninguno · Root directory: `app` · Build command: `npm run build` · Output: `dist`.
-- No agregues `404.html`: así Pages sirve la app en rutas que no son archivos.
+- Repositorio: `arismtj/jhosimportaciones`, rama `main`. Cada `git push` publica automáticamente.
+- Path (root directory): `/app` · Build command: `npm run build` · Deploy command: `npx wrangler deploy`.
+- `app/wrangler.jsonc` publica la carpeta `dist` como archivos estáticos: `/producto/x` sirve
+  `producto/x.html` y las rutas sin archivo cargan la app (SPA).
 - `public/_headers` define caché larga para `/assets/*`.
+- Dirección temporal: `https://jhosimportaciones.arismartintj.workers.dev`.
 
-## Dominio `jhosimportaciones.com` (Spaceship)
+## Dominio `jhosimportaciones.com` (Spaceship → Cloudflare)
 
-1. Agrega el dominio en el proyecto (Vercel → Domains, o Cloudflare Pages → Custom domains).
-2. Copia los registros DNS que indique la plataforma en Spaceship (o cambia los
-   nameservers a Cloudflare si usas Cloudflare Pages).
-3. Redirige `www.jhosimportaciones.com` → `jhosimportaciones.com` para tener una sola URL canónica.
+1. Cloudflare → Account home → «Add a domain» → `jhosimportaciones.com` → plan Free.
+2. En Spaceship cambia los nameservers por los 2 que indica Cloudflare (desactiva DNSSEC si está activo).
+3. Cuando el dominio figure como «Active»: Workers & Pages → `jhosimportaciones` → Settings →
+   Domains & Routes → Add → Custom domain → `jhosimportaciones.com` y `www.jhosimportaciones.com`.
 
 ## Supabase
 
-- Auth → URL Configuration: agrega `https://jhosimportaciones.com` como Site URL y en
-  Redirect URLs (para el inicio de sesión con Google).
+- Auth → URL Configuration: Site URL `https://jhosimportaciones.com`; Redirect URLs
+  `https://jhosimportaciones.com/**`, `https://www.jhosimportaciones.com/**` y
+  `https://jhosimportaciones.arismartintj.workers.dev/**` (inicio de sesión con Google).
 - Migra las imágenes a Storage (una vez) con `npm run catalog:import` y la clave secreta
   en el entorno del proceso; hoy siguen enlazadas a la tienda temporal.
 

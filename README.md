@@ -35,4 +35,4 @@ cd app
 npm run build
 ```
 
-Para Cloudflare Pages, el directorio raíz será `app`, el comando de compilación `npm run build` y la salida `dist`.
+Se publica en Cloudflare Workers: ver `docs/seo-y-despliegue.md`.

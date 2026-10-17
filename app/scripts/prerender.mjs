@@ -154,9 +154,6 @@ const addUrl = (pathName, lastmod, priority) => sitemap.push({ loc: absoluteUrl(
 const today = new Date().toISOString().slice(0, 10)
 const newest = (list) => list.map((product) => product.updatedAt).filter(Boolean).sort().at(-1)?.slice(0, 10) ?? today
 
-// Fallback de la SPA (rutas no pre-renderizadas): plantilla limpia
-await write('app-shell.html', template.replace('<!--app-html-->', ''))
-
 // Portada
 await write('index.html', page({
   title: content.home.title,
